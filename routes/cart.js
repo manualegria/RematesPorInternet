@@ -1,21 +1,15 @@
 const Cart = require('../models/Cart')
-// const {
-//   verifyToken,
-//   verifyTokenAndAuthorization,
-//   verifyTokenAndRole,
-// } = require('./verifyToken')
+const {
+  verifyToken,
+  verifyTokenAndAuthorization,
+  verifyTokenAndRole,
+} = require('../middleware/verifyToken')
 const router = require('express').Router()
 const getDateDetails = require('../utils/constant')
 
 //CREATE
 
-const removeSpace = (body) => {
-  for (const key in body) {
-    if (typeof body[key] === 'string') body[key] = body[key].trim()
-  }
-}
-
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   removeSpace(req.body)
 
   const newCart = new Cart(req.body)
@@ -29,7 +23,7 @@ router.post('/', async (req, res) => {
 })
 
 //UPDATE
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyTokenAndAuthorization, async (req, res) => {
   try {
     const updatedCart = await Cart.findByIdAndUpdate(
       req.params.id,
@@ -46,7 +40,7 @@ router.put('/:id', async (req, res) => {
 
 // //DELETE
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyTokenAndAuthorization, async (req, res) => {
   try {
     await Cart.findByIdAndDelete(req.params.id)
     res.status(200).json('Cart has been deleted...')
@@ -84,3 +78,4 @@ router.get('/', async (req, res) => {
 })
 
 module.exports = router
+
