@@ -1,3 +1,4 @@
+
 require('dotenv').config()
 const express = require('express')
 const mercadopago = require('mercadopago')
@@ -44,3 +45,4 @@ app.use('/api/roles', roleRoute)
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`)
 })
+
