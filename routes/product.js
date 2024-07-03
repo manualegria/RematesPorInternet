@@ -1,17 +1,19 @@
+
 const Product = require('../models/Product')
 const Brand = require('../models/Brand')
 const Category = require('../models/Category')
+const User = require('../models/User')
 const { removeSpace } = require('../utils/constant')
 const {
   verifyToken,
   verifyTokenAndAuthorization,
   verifyTokenAndRole,
-} = require('./verifyToken')
+} = require('../middleware/verifyToken')
 const router = require('express').Router()
 
-//CREATE PRODUCT
 
-router.post('/', async (req, res) => {
+//CREATE PRODUCT
+router.post('/',verifyTokenAndAuthorization, async (req, res) => {
   removeSpace(req.body)
 
   try {
@@ -27,6 +29,9 @@ router.post('/', async (req, res) => {
       stock,
     } = req.body
 
+    const userId = req.user.id;
+    
+
     // Validar que el ID de la marca existe
     const brandExists = await Brand.findById(brand)
     if (!brandExists) {
@@ -41,6 +46,8 @@ router.post('/', async (req, res) => {
         .json({ message: 'Una o más categorías no fueron encontradas' })
     }
 
+    const userCreate = await User.findById(userId);
+
     const newProduct = new Product({
       name,
       description,
@@ -48,6 +55,10 @@ router.post('/', async (req, res) => {
         _id: brandExists._id.toString(),
         name: brandExists.name,
         description: brandExists.description,
+      },
+      userId: {
+        _id: userCreate._id.toString(),
+        name: userCreate.fullName,
       },
       img,
       categories: categoriesExist.map((cat) => ({
@@ -60,7 +71,7 @@ router.post('/', async (req, res) => {
       price,
       stock,
     })
-
+  console.log('--------', userCreate);
     const saveProduct = await newProduct.save()
     res.status(200).json(saveProduct)
   } catch (error) {
@@ -69,7 +80,7 @@ router.post('/', async (req, res) => {
 })
 
 //UPDATE
-router.put('/:id', verifyTokenAndAuthorization, async (req, res) => {
+router.put('/:id', verifyTokenAndAuthorization,  async (req, res) => {
   try {
     const {
       name,
@@ -88,9 +99,11 @@ router.put('/:id', verifyTokenAndAuthorization, async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: 'Producto no encontrado' })
     }
-
+    
+    console.log(product.userId._id , req.user.id);
     // Verificar si el usuario tiene permisos para actualizar el producto
-    if (product.userId !== req.user.id && req.user.role.name !== 'Admin') {
+    if (product.userId._id !== req.user.id
+      && req.user.role !== 'Admin') {
       return res
         .status(403)
         .json('No tienes permiso para actualizar este producto')
@@ -182,8 +195,9 @@ router.put('/:id', verifyTokenAndAuthorization, async (req, res) => {
 //   }
 // })
 
+
 //DELETE
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyTokenAndAuthorization, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
     if (!product) {
