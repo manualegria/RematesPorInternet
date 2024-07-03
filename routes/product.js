@@ -71,7 +71,7 @@ router.post('/',verifyTokenAndAuthorization, async (req, res) => {
       price,
       stock,
     })
-  console.log('--------', userCreate);
+
     const saveProduct = await newProduct.save()
     res.status(200).json(saveProduct)
   } catch (error) {
@@ -100,7 +100,6 @@ router.put('/:id', verifyTokenAndAuthorization,  async (req, res) => {
       return res.status(404).json({ message: 'Producto no encontrado' })
     }
     
-    console.log(product.userId._id , req.user.id);
     // Verificar si el usuario tiene permisos para actualizar el producto
     if (product.userId._id !== req.user.id
       && req.user.role !== 'Admin') {
