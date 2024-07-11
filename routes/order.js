@@ -2,7 +2,7 @@ const Order = require('../models/Order')
 // const {
 //   verifyToken,
 //   verifyTokenAndAuthorization,
-//   verifyTokenAndRole,
+//   verifyTokenAndAdmin,
 // } = require('./verifyToken')
 const router = require('express').Router()
 const mongoose = require('mongoose')
