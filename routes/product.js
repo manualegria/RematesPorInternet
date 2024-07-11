@@ -7,7 +7,7 @@ const { removeSpace } = require('../utils/constant')
 const {
   verifyToken,
   verifyTokenAndAuthorization,
-  verifyTokenAndRole,
+  verifyTokenAndAdmin,
 } = require('../middleware/verifyToken')
 const router = require('express').Router()
 
