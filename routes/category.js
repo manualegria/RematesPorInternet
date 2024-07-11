@@ -1,13 +1,13 @@
 const router = require('express').Router()
 const Category = require('../models/Category')
-// const {
-//   verifyToken,
-//   verifyTokenAndAuthorization,
-//   verifyTokenAndRole,
-// } = require('./verifyToken')
+const {
+  verifyToken,
+  verifyTokenAndAuthorization,
+  verifyTokenAndAdmin,
+} = require('../middleware/verifyToken')
 
 // CREATE
-router.post('/', async (req, res) => {
+router.post('/', verifyTokenAndAuthorization, async (req, res) => {
   const { name, description } = req.body
 
   try {
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
 })
 
 // GET
-router.get('/find/:id', async (req, res) => {
+router.get('/find/:id',  async (req, res) => {
   try {
     const categories = await Category.findById(req.params.id)
     if (!product || product.isRemoved) {
@@ -50,7 +50,7 @@ router.get('/', async (req, res) => {
 })
 
 // UPDATE
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyTokenAndAuthorization, async (req, res) => {
   const { name, description } = req.body
 
   try {
@@ -71,7 +71,7 @@ router.put('/:id', async (req, res) => {
 })
 
 // DELETE
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyTokenAndAuthorization, async (req, res) => {
   try {
     const category = await Category.findById(req.params.id)
 
