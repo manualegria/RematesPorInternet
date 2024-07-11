@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken')
 router.post('/registrar', async (req, res) => {
   try {
     const { userName, firstName, lastName, email, password } = req.body
-    let roleExistsArray = await Role.find({ name: 'Estanadar' })
+    let roleExistsArray = await Role.find({ name: 'General' })
     let roleExists = roleExistsArray[0]
 
     if (!roleExists) {
