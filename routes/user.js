@@ -1,14 +1,14 @@
 const User = require('../models/User')
 const getDateDetails = require('../utils/constant')
-// const {
-//   verifyToken,
-//   verifyTokenAndAuthorization,
-//   verifyTokenAndRole,
-// } = require('./verifyToken')
+const {
+  verifyToken,
+  verifyTokenAndAuthorization,
+  verifyTokenAndAdmin,
+} = require('../middleware/verifyToken')
 const router = require('express').Router()
 
 //UPDATE
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyTokenAndAdmin, async (req, res) => {
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
       req.body.password,
@@ -31,7 +31,7 @@ router.put('/:id', async (req, res) => {
 
 //DELETE
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyTokenAndAdmin, async (req, res) => {
   try {
     const userId = req.params.id
 
@@ -56,7 +56,7 @@ router.delete('/:id', async (req, res) => {
 
 // GET USER
 
-router.get('/find/:id', async (req, res) => {
+router.get('/find/:id',verifyTokenAndAdmin, async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.id, isRemoved: false })
 
@@ -72,7 +72,7 @@ router.get('/find/:id', async (req, res) => {
 
 // GET ALL USER
 
-router.get('/', async (req, res) => {
+router.get('/', verifyTokenAndAdmin, async (req, res) => {
   const query = req.query.new
 
   try {
@@ -88,7 +88,7 @@ router.get('/', async (req, res) => {
 
 // GET USER STATS
 
-router.get('/stats', async (req, res) => {
+router.get('/stats', verifyTokenAndAdmin, async (req, res) => {
   const date = new Date()
   const lastYear = new Date(date.setFullYear(date.getFullYear() - 1))
   try {
