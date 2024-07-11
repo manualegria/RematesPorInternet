@@ -2,23 +2,29 @@ const router = require('express').Router()
 const Role = require('../models/Role')
 const { removeSpace } = require('../utils/constant')
 const getDateDetails = require('../utils/constant')
-// const {
-//   verifyToken,
-//   verifyTokenAndAuthorization,
-//   verifyTokenAndRole,
-// } = require('./verifyToken')
+const {
+  verifyToken,
+  verifyTokenAndAuthorization,
+  verifyTokenAndAdmin,
+} = require('../middleware/verifyToken')
 
 // CREATE ROLE
-router.post('/', async (req, res) => {
+router.post('/', verifyTokenAndAdmin, async (req, res) => {
   removeSpace(req.body)
 
   try {
+
+    const roleExist = await Role.findOne({name: req.body.name})
+    if(roleExist ){
+      return res.status(402).json('Rol ya existe')
+    }
+
     const newRole = new Role({
       name: req.body.name,
       description: req.body.description,
     })
 
-    const saveRole = await newRole.save()
+    const saveRole = await newRole
     res.status(201).json(saveRole)
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -26,7 +32,7 @@ router.post('/', async (req, res) => {
 })
 
 //UPDATE
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyTokenAndAdmin, async (req, res) => {
   try {
     const { name, description } = req.body
 
@@ -46,7 +52,7 @@ router.put('/:id', async (req, res) => {
 })
 
 //DELETE
-router.post('/:id', async (req, res) => {
+router.post('/:id', verifyTokenAndAdmin, async (req, res) => {
   try {
     const roleId = req.params.id
 
@@ -71,7 +77,7 @@ router.post('/:id', async (req, res) => {
 
 //GET
 
-router.get('/', async (req, res) => {
+router.get('/', verifyTokenAndAdmin, async (req, res) => {
   const query = req.body.new
 
   try {
