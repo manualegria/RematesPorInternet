@@ -24,8 +24,8 @@ const verifyTokenAndAuthorization = (req, res, next) => {
   verifyToken(req, res, () => {
     // Verificar si el usuario es admin o vendedor
     if (req.user && (req.user.id === req.params.id ||
-      req.user.role === 'admin' ||
-       req.user.role === 'vendedor')) {
+      req.user.role.name === 'admin' ||
+       req.user.role.name === 'vendedor')) {
        
       next();
     } else {
@@ -34,9 +34,9 @@ const verifyTokenAndAuthorization = (req, res, next) => {
   });
 };
 
-const verifyTokenAndRole = (req, res, next) => {
+const verifyTokenAndAdmin = (req, res, next) => {
   verifyToken(req, res, () => {
-    if (req.user.role === 'vendedor') {
+    if (req.user && (req.user.role.name === 'admin')) {
       next()
     } else {
       res.status(403).json('You are not alowed to do that!')
@@ -46,6 +46,6 @@ const verifyTokenAndRole = (req, res, next) => {
 
 module.exports = {
   verifyToken,
-  verifyTokenAndRole,
+  verifyTokenAndAdmin,
   verifyTokenAndAuthorization
 };
