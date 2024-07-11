@@ -2,7 +2,7 @@ const Cart = require('../models/Cart')
 const {
   verifyToken,
   verifyTokenAndAuthorization,
-  verifyTokenAndRole,
+  verifyTokenAndAdmin,
 } = require('../middleware/verifyToken')
 const router = require('express').Router()
 const getDateDetails = require('../utils/constant')
